@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const ytdl = require("ytdl-core");
 const readline = require("readline");
 const fetch = require("node-fetch");
+const cors = require("cors");
 // const ffmpeg = require("fluent-ffmpeg");
 
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
@@ -14,9 +15,14 @@ const url = "https://api.assemblyai.com/v2/upload";
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static("files"));
+
+app.get("/hi", async (req, res) => {
+  res.send("hi");
+});
 
 app.get("/audio", async (req, res) => {
   console.log(req.query.v);
@@ -88,7 +94,9 @@ app.get("/audio", async (req, res) => {
               // fs.unlink(`${__dirname}/files/${req.query.v}.mp3`, (a) => {
               //   console.log("deleted");
               // });
-              res.send(`URL: ${data["upload_url"]}`);
+              res.json({
+                url: data["upload_url"],
+              });
             })
             .catch((error) => {
               console.error(`Error: ${error}`);
